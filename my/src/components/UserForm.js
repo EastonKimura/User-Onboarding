@@ -8,7 +8,11 @@ const UserForm = ({ values, errors, touched, status }) => {
   console.log("values", values);
   console.log("errors", errors);
   console.log("touched", touched);
-  const [users, setUsers] = useState();
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+status && setUsers(user => [...users, status]);
+  }, [status])
   return (
     <div>
       <Form>
@@ -58,6 +62,15 @@ const UserForm = ({ values, errors, touched, status }) => {
         </label>
         <button type="submit">Submit!</button>
       </Form>
+      {}
+    {users.map(user => {
+return (
+    <div key="user.id">
+    <p>Name: {user.name}</p>
+    <p>Email: {user.email}</p>
+  </div>
+);
+})}
     </div>
   );
 };
@@ -84,14 +97,12 @@ const FormikUserForm = withFormik({
   handleSubmit(values, { setStatus, resetForm }) {
     axios
       .post("https://reqres.in/api/users", values)
-      .then(response => {
-        console.log("this is the response: ", response);
-        // sends a status update through props in UserForm with value as response.data content
-        // setStatus(response.data);
-        //clears form inputs, from FormikBag
+      .then(res => {
+        console.log("this is the response: ", res);
+        setStatus(res.data);
         resetForm();
       })
-      // don't forget to add .catch
+
       .catch(err => console.log(err.response));
   }
 })(UserForm);
